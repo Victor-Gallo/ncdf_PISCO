@@ -1,0 +1,38 @@
+install.packages("lattice")
+install.packages("latticeExtra")
+install.packages("rgdal")
+setwd("G:/PISCO")
+setwd("G:/Investigacion 2021/gis/shp")
+library(sp)
+library(ncdf4)
+library(raster)
+library(lattice)
+library(latticeExtra)
+library(rgdal)
+
+prec.brick<-brick("Precpm.nc")
+nlayers(prec.brick)
+spplot(prec.brick[[1:6]])
+
+cuenca<-readOGR(dsn=".", layer = "Tumbaro_geo")
+plot(cuenca, col="cyan", main="Subcuenca Tumbaro")
+plot(cuenca, axes=T,asp=1,col="cyan", main="Subcuenca Tumbaro")
+
+
+plot(prec.brick[[1]])
+plot(cuenca, add=T)
+Tumbaro <- crop(prec.brick[[1:12]], cuenca,snap="out")
+plot(Tumbaro)
+Tumbaro <- mask(Tumbaro, cuenca)
+
+names(Tumbaro)
+names(Tumbaro) <- month.abb
+plot(Tumbaro)
+projection(Tumbaro)
+
+spplot(Tumbaro, col.regions = terrain.colors(100))
+spplot(Tumbaro, col.regions = rev(terrain.colors(100)))
+range(Tumbaro)
+spplot(Tumbaro, col.regions = rev(terrain.colors(100)),
+       at=seq(0,320,5), scales = list(draw=TRUE) ) +
+  layer(sp.polygons(cuenca, lwd=1, col='darkgray'))
