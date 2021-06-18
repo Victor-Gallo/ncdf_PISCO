@@ -1,0 +1,37 @@
+setwd("D:/Pisco")
+install.packages("ncdf4")
+install.packages("raster")
+install.packages("rgdal")
+
+library(ncdf4)
+library(raster)
+library("rgdal")
+
+pisco.prec<- brick("Prec.nc")
+pisco.evp<- brick("Evapo.nc")
+pisco.tmax<- brick("Tmax.nc")
+pisco.tmin<- brick("Tmin.nc")
+
+setwd("D:/Pisco/Tumbaro")
+cuenca<-readOGR(dsn=".", layer = "tumbaro")
+plot(cuenca)
+
+prec.tumbaro.month<-extract(pisco.prec, cuenca, fun=mean)
+range(prec.tumbaro.month)
+plot(prec.tumbaro.month[1,], type = "l", col="blue",ylim=c(13,431),ylab = "mm", xlab = "meses", main = "Precipitación areal")
+write.csv(t(prec.tumbaro.month), 'Precipitacion_Tumbaro.csv')
+
+evp.tumbaro.month<-extract(pisco.evp, cuenca, fun=mean)
+range(evp.tumbaro.month)
+plot(evp.tumbaro.month[1,], type = "l", col="green",ylim=c(100,145),ylab = "mm", xlab = "meses", main = "Evapotranspiración areal")
+write.csv(t(evp.tumbaro.month), 'Evapotranspiración_Tumbaro.csv')
+
+tmax.tumbaro.month<-extract(pisco.tmax, cuenca, fun=mean)
+range(tmax.tumbaro.month)
+plot(tmax.tumbaro.month[1,], type = "l", col="red",ylim=c(27,32),ylab = "°C", xlab = "meses", main = "Temperatura máxima areal")
+write.csv(t(tmax.tumbaro.month), 'Temperatura_max_areal_Tumbaro.csv')
+
+tmin.tumbaro.month<-extract(pisco.tmin, cuenca, fun=mean)
+range(tmin.tumbaro.month)
+plot(tmin.tumbaro.month[1,], type = "l", col="red",ylim=c(15,21),ylab = "°C", xlab = "meses", main = "Temperatura mínima areal")
+write.csv(t(tmin.tumbaro.month), 'Temperatura_min_areal_Tumbaro.csv')
